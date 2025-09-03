@@ -6,7 +6,9 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'docker build -t mca-devops-app .'
+        dir('app') {
+          sh 'docker build -t mca-devops-app .'
+        }
       }
     }
     stage('Test') {

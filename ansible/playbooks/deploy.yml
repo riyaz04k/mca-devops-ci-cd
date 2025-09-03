@@ -1,0 +1,37 @@
+---
+- name: Deploy Node.js Docker App
+  hosts: app
+  become: yes
+  tasks:
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Copy Docker image tar from Jenkins server
+      copy:
+        src: /var/lib/jenkins/workspace/mca-devops-pipeline/app/mca-devops-app.tar
+        dest: /home/ubuntu/mca-devops-app.tar
+        mode: '0644'
+
+    - name: Load Docker image
+      shell: docker load -i /home/ubuntu/mca-devops-app.tar
+
+    - name: Stop existing container if running
+      shell: |
+        if [ $(docker ps -q -f name=mca-devops-app) ]; then
+          docker stop mca-devops-app
+          docker rm mca-devops-app
+        fi
+      ignore_errors: yes
+
+    - name: Run Docker container
+      shell: docker run -d --name mca-devops-app -p 3000:3000 mca-devops-app
+

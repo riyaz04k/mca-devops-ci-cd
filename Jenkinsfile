@@ -32,6 +32,15 @@ pipeline {
                 archiveArtifacts artifacts: 'app/**/*.js', fingerprint: true
             }
         }
+
+        stage('Deploy') {
+            steps {
+                dir('ansible') {
+                    // Deploy the Docker image to the app server
+                    sh 'ansible-playbook -i inventories/production playbooks/deploy.yml'
+                }
+            }
+        }
     }
 }
 

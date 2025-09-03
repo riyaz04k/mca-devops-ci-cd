@@ -1,26 +1,37 @@
 pipeline {
-  agent any
-  stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "mca-devops-app"
     }
-    stage('Build') {
-      steps {
-        dir('app') {
-          sh 'docker build -t mca-devops-app .'
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
+
+        stage('Build') {
+            steps {
+                dir('app') {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run tests inside the Docker container
+                sh "docker run --rm ${DOCKER_IMAGE} npm test"
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: 'app/**/*.js', fingerprint: true
+            }
+        }
     }
-    stage('Test') {
-      steps {
-        sh 'npm test --prefix app'
-      }
-    }
-    stage('Archive') {
-      steps {
-        sh 'docker save mca-devops-app -o mca-devops-app.tar'
-        archiveArtifacts artifacts: 'mca-devops-app.tar', fingerprint: true
-      }
-    }
-  }
 }
+

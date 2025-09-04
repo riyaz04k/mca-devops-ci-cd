@@ -1,5 +1,6 @@
 // index.js
 const express = require('express');
+<<<<<<< HEAD
 const chalk = require('chalk'); // For colorful console logs
 
 const app = express();
@@ -29,3 +30,17 @@ app.get('/hello', (req, res) => {
 app.listen(PORT, () => {
   console.log(chalk.magenta(`🌟 Server is running on http://localhost:${PORT}`));
 });
+=======
+const chalk = require('chalk');
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send(chalk.green('Hello from CI/CD pipeline on AWS EC2! I am Riyaz Khan'));
+});
+
+app.listen(port, () => {
+    console.log(chalk.blue(`App running on port ${port}`));
+});
+
+>>>>>>> 7a98fb3 (v3)

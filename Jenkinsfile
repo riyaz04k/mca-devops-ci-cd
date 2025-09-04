@@ -30,6 +30,8 @@ pipeline {
         stage('Save Docker Image') {
             steps {
                 dir('app') {
+                    // Ensure the target directory exists
+                    sh "mkdir -p ../ansible/playbooks/files"
                     // Save Docker image tarball into ansible/playbooks/files so Ansible can access it
                     sh "docker save -o ../ansible/playbooks/files/${DOCKER_IMAGE}.tar ${DOCKER_IMAGE}"
                 }

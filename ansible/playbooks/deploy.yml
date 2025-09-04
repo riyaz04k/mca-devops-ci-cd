@@ -17,12 +17,12 @@
 
     - name: Copy Docker image tar from Jenkins server
       copy:
-        src: ../mca-devops-app.tar
-        dest: /home/ubuntu/mca-devops-app.tar
+        src: files/mca-devops-app.tar
+        dest: /tmp/mca-devops-app.tar
         mode: '0644'
 
     - name: Load Docker image on app server
-      command: docker load -i /home/ubuntu/mca-devops-app.tar
+      command: docker load -i /tmp/mca-devops-app.tar
 
     - name: Stop existing container if running
       shell: docker stop mca-devops-app || true
@@ -34,4 +34,3 @@
 
     - name: Run Docker container
       shell: docker run -d --name mca-devops-app -p 3000:3000 mca-devops-app
-

@@ -30,8 +30,8 @@ pipeline {
         stage('Save Docker Image') {
             steps {
                 dir('app') {
-                    // Save Docker image tarball into ansible/files so Ansible can access it
-                    sh "docker save -o ../ansible/files/${DOCKER_IMAGE}.tar ${DOCKER_IMAGE}"
+                    // Save Docker image tarball into ansible/playbooks/files so Ansible can access it
+                    sh "docker save -o ../ansible/playbooks/files/${DOCKER_IMAGE}.tar ${DOCKER_IMAGE}"
                 }
             }
         }
@@ -52,3 +52,4 @@ pipeline {
         }
     }
 }
+

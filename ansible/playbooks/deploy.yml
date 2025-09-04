@@ -17,7 +17,7 @@
 
     - name: Copy Docker image tar from Jenkins server
       copy:
-        src: files/mca-devops-app.tar
+        src: ../files/mca-devops-app.tar
         dest: /tmp/mca-devops-app.tar
         mode: '0644'
 
@@ -34,3 +34,4 @@
 
     - name: Run Docker container
       shell: docker run -d --name mca-devops-app -p 3000:3000 mca-devops-app
+

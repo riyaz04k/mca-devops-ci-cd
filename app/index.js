@@ -13,7 +13,7 @@ const products = [
 // Home page
 app.get('/', (req, res) => {
   res.send(`
-    <h1>🛒 Welcome to Riyaz's Simple E-commerce Store 🚀</h1>
+    <h1>🛒 Welcome to Riyaz's  Store 🚀</h1>
     <p>Available endpoints:</p>
     <ul>
       <li><a href="/products">/products</a> → View products</li>

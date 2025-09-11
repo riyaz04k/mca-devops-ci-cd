@@ -10,19 +10,49 @@ const products = [
   { id: 4, name: "Smartwatch", price: 200 }
 ];
 
-// Home page
+// Home page with styled HTML
 app.get('/', (req, res) => {
+  let productRows = products.map(p => `
+      <tr>
+        <td>${p.id}</td>
+        <td>${p.name}</td>
+        <td>$${p.price}</td>
+      </tr>
+  `).join("");
+
   res.send(`
-    <h1>🛒 Welcome to Riyaz's dress  Store 🚀</h1>
-    <p>Available endpoints:</p>
-    <ul>
-      <li><a href="/products">/products</a> → View products</li>
-      <li><a href="/checkout">/checkout</a> → Simulate checkout</li>
-    </ul>
+    <html>
+      <head>
+        <title>🛒 Simple E-commerce Store</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+          h1 { color: #2c3e50; }
+          table { width: 60%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+          th { background: #3498db; color: white; }
+          tr:nth-child(even) { background: #f9f9f9; }
+          a { display: inline-block; margin-top: 20px; text-decoration: none; color: white; background: #27ae60; padding: 10px 15px; border-radius: 5px; }
+          a:hover { background: #219150; }
+        </style>
+      </head>
+      <body>
+        <h1>🛒 Welcome to Simple E-commerce Store 🚀</h1>
+        <p>Browse our products below:</p>
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Product</th>
+            <th>Price</th>
+          </tr>
+          ${productRows}
+        </table>
+        <a href="/checkout">Proceed to Checkout</a>
+      </body>
+    </html>
   `);
 });
 
-// Get all products
+// Get all products (JSON API)
 app.get('/products', (req, res) => {
   res.json(products);
 });

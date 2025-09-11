@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 
 // Dummy product list
 const products = [
-  { id: 1, name: "Laptop", price: 800, img: "https://via.placeholder.com/150?text=Laptop" },
+  { id: 1, name: "Laptop", price: 800, img: "https://prepbytes-misc-images.s3.ap-south-1.amazonaws.com/assets/1695624005182-Topic%20%2861%29.jpg" },
   { id: 2, name: "Phone", price: 500, img: "https://via.placeholder.com/150?text=Phone" },
   { id: 3, name: "Headphones", price: 100, img: "https://via.placeholder.com/150?text=Headphones" },
   { id: 4, name: "Smartwatch", price: 200, img: "https://via.placeholder.com/150?text=Smartwatch" }

@@ -50,7 +50,7 @@ app.get("/", (req, res) => {
       </head>
       <body>
         <header>
-          <h1>🚀 Welcome to My Cool E-commerce Store</h1>
+          <h1>🚀 Welcome to My Cool Riyaz E-commerce Store</h1>
           <div class="nav">
             <a href="/">🏠 Home</a>
             <a href="/cart">🛒 Cart</a>

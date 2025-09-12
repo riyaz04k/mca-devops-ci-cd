@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   res.send(`
     <html>
       <head>
-        <title>🛒 Simple Riyaz E-commerce Store</title>
+        <title>🛒 Simple Riyaz's E-commerce Store</title>
         <style>
           body { font-family: 'Segoe UI', sans-serif; margin: 0; background: linear-gradient(135deg, #6a11cb, #2575fc); color: #fff; }
           header { padding: 20px; text-align: center; background: rgba(0,0,0,0.3); }

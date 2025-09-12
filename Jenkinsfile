@@ -17,6 +17,7 @@ pipeline {
                 dir('app') {
                     sh "docker build -t ${DOCKER_IMAGE} ."
                 }
+                echo "Building project..."
             }
         }
 
@@ -24,6 +25,7 @@ pipeline {
             steps {
                 // Run tests inside the Docker container
                 sh "docker run --rm ${DOCKER_IMAGE} npm test"
+                echo "Running tests..."
             }
         }
 
@@ -51,6 +53,19 @@ pipeline {
                     sh 'ansible-playbook -i inventories/production playbooks/deploy.yml'
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            mail to: 'your-email@gmail.com',
+                 subject: "✅ SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "The job completed successfully. See details: ${env.BUILD_URL}"
+        }
+        failure {
+            mail to: 'your-email@gmail.com',
+                 subject: "❌ FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "The job failed. Check logs here: ${env.BUILD_URL}"
         }
     }
 }

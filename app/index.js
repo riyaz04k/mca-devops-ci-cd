@@ -31,26 +31,101 @@ app.get("/", (req, res) => {
   res.send(`
     <html>
       <head>
-        <title>🛒 Simple Riyaz's E-commerce Store</title>
+        <title>🌈 Riyaz's Fancy E-commerce Store</title>
         <style>
-          body { font-family: 'Segoe UI', sans-serif; margin: 0; background: linear-gradient(135deg, #6a11cb, #2575fc); color: #fff; }
-          header { padding: 20px; text-align: center; background: rgba(0,0,0,0.3); }
-          header h1 { margin: 0; font-size: 2.5rem; }
-          .nav { margin-top: 10px; }
-          .nav a { margin: 0 15px; text-decoration: none; color: #ffdd59; font-weight: bold; }
-          .store { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; padding: 30px; }
-          .card { background: white; color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.2); width: 220px; transition: transform 0.2s; }
-          .card:hover { transform: translateY(-8px); }
-          .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }
-          .card h3 { margin: 10px 0; color: #2c3e50; }
-          .price { font-size: 1.2rem; font-weight: bold; color: #27ae60; }
-          .btn { display: inline-block; margin-top: 10px; text-decoration: none; color: white; background: #e67e22; padding: 8px 14px; border-radius: 6px; transition: 0.3s; }
-          .btn:hover { background: #d35400; }
+          body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #ff6a00, #ee0979, #2575fc);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            color: #fff;
+          }
+          @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+          }
+          header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #ffeaa7;
+          }
+          .nav {
+            margin-top: 10px;
+          }
+          .nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #ffdd59;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+          }
+          .nav a:hover {
+            color: #fff;
+          }
+          .store {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 30px;
+          }
+          .card {
+            background: #fff;
+            color: #333;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            width: 240px;
+            transition: transform 0.3s, box-shadow 0.3s;
+          }
+          .card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+          }
+          .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+          }
+          .card h3 {
+            margin: 12px 0 6px;
+            color: #2c3e50;
+          }
+          .price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #e74c3c;
+          }
+          .btn {
+            display: inline-block;
+            margin-top: 12px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+          }
+          .btn:hover {
+            background: linear-gradient(45deg, #ff6a00, #ee0979);
+            transform: scale(1.05);
+          }
         </style>
       </head>
       <body>
         <header>
-          <h1>🚀 Welcome to Node JS My Cool Riyaz khan's E-commerce Store</h1>
+          <h1>🚀 Welcome to Riyaz Khan's Cool E-commerce Store 🌟</h1>
           <div class="nav">
             <a href="/">🏠 Home</a>
             <a href="/cart">🛒 Cart</a>
@@ -76,9 +151,9 @@ app.get("/add-to-cart/:id", (req, res) => {
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
     return res.send(`
-      <html><body style="text-align:center; font-family:Arial; background:#f8f9fa;">
-      <h2>🛒 Your cart is empty.</h2>
-      <a href="/" style="color:#3498db; text-decoration:none;">⬅ Go shopping</a>
+      <html><body style="text-align:center; font-family:Poppins; background:#f8f9fa; padding:40px;">
+      <h2 style="color:#e74c3c;">🛒 Your cart is empty.</h2>
+      <a href="/" style="background:#2575fc; color:#fff; padding:12px 20px; border-radius:8px; text-decoration:none;">⬅ Go shopping</a>
       </body></html>
     `);
   }
@@ -93,19 +168,19 @@ app.get("/cart", (req, res) => {
     <html>
       <head>
         <style>
-          body { font-family: Arial, sans-serif; background: #f8f9fa; color:#333; text-align:center; padding:40px; }
+          body { font-family: Poppins, sans-serif; background: #f0f2f5; color:#333; text-align:center; padding:40px; }
           ul { list-style:none; padding:0; }
-          li { background:#fff; margin:10px auto; padding:10px; border-radius:6px; width:250px; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
-          a { text-decoration:none; color:#fff; padding:10px 15px; border-radius:6px; background:#27ae60; margin:10px; display:inline-block; }
-          a:hover { background:#219150; }
+          li { background:#fff; margin:10px auto; padding:12px; border-radius:8px; width:280px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-size:1.1rem; }
+          .btn { text-decoration:none; color:#fff; padding:12px 20px; border-radius:8px; background:linear-gradient(45deg, #6a11cb, #2575fc); margin:10px; display:inline-block; transition:0.3s; }
+          .btn:hover { background:linear-gradient(45deg, #ff6a00, #ee0979); transform:scale(1.05); }
         </style>
       </head>
       <body>
         <h2>🛒 Your Cart</h2>
         <ul>${cartItems}</ul>
         <h3>Total: 💲${total}</h3>
-        <a href="/checkout">✅ Checkout</a>
-        <a href="/">⬅ Back to Store</a>
+        <a href="/checkout" class="btn">✅ Checkout</a>
+        <a href="/" class="btn">⬅ Back to Store</a>
       </body>
     </html>
   `);
@@ -115,10 +190,10 @@ app.get("/cart", (req, res) => {
 app.get("/checkout", (req, res) => {
   cart = []; // Empty the cart after checkout
   res.send(`
-    <html><body style="font-family:Arial; text-align:center; padding:40px; background:#ecf0f1;">
+    <html><body style="font-family:Poppins; text-align:center; padding:50px; background:linear-gradient(135deg, #6a11cb, #2575fc); color:#fff;">
       <h2>✅ Checkout complete!</h2>
-      <p>🎉 Thank you for shopping with us.</p>
-      <a href="/" style="color:#3498db; text-decoration:none;">⬅ Back to Home</a>
+      <p>🎉 Thank you for shopping with us 💖</p>
+      <a href="/" style="background:#ff6a00; padding:12px 20px; border-radius:8px; text-decoration:none; color:#fff;">⬅ Back to Home</a>
     </body></html>
   `);
 });

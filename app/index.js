@@ -13,11 +13,12 @@ const products = [
 // In-memory cart
 let cart = [];
 
+// Find cart item by product ID
 function findCartItem(id) {
   return cart.find((item) => item.id === id);
 }
 
-// Add to cart
+// Add product to cart
 app.get("/add-to-cart/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const product = products.find((p) => p.id === id);
@@ -32,26 +33,31 @@ app.get("/add-to-cart/:id", (req, res) => {
   res.redirect("/cart");
 });
 
-// Increase / Decrease / Remove
+// Increase quantity
 app.get("/cart/increase/:id", (req, res) => {
-  let item = findCartItem(parseInt(req.params.id));
-  if (item) item.qty++;
+  const id = parseInt(req.params.id);
+  let cartItem = findCartItem(id);
+  if (cartItem) cartItem.qty += 1;
   res.redirect("/cart");
 });
 
+// Decrease quantity
 app.get("/cart/decrease/:id", (req, res) => {
-  let item = findCartItem(parseInt(req.params.id));
-  if (item) {
-    item.qty--;
-    if (item.qty <= 0) {
-      cart = cart.filter((i) => i.id !== item.id);
+  const id = parseInt(req.params.id);
+  let cartItem = findCartItem(id);
+  if (cartItem) {
+    cartItem.qty -= 1;
+    if (cartItem.qty <= 0) {
+      cart = cart.filter((item) => item.id !== id);
     }
   }
   res.redirect("/cart");
 });
 
+// Remove item completely
 app.get("/remove-from-cart/:id", (req, res) => {
-  cart = cart.filter((i) => i.id !== parseInt(req.params.id));
+  const id = parseInt(req.params.id);
+  cart = cart.filter((item) => item.id !== id);
   res.redirect("/cart");
 });
 
@@ -102,7 +108,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-// Cart Page with Order Summary
+// Cart Page
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
     return res.send(`
@@ -116,49 +122,37 @@ app.get("/cart", (req, res) => {
   let cartItems = cart
     .map(
       (item) => `
-        <div class="cart-item">
-          <img src="${item.img}" alt="${item.name}">
-          <div class="info">
-            <h4>${item.name}</h4>
-            <p>₹${item.price} × ${item.qty} = ₹${item.price * item.qty}</p>
-            <a href="/cart/increase/${item.id}">➕</a>
-            <a href="/cart/decrease/${item.id}">➖</a>
-            <a href="/remove-from-cart/${item.id}" style="color:red;">❌ Remove</a>
-          </div>
-        </div>
+        <li>
+          <img src="${item.img}" alt="${item.name}" style="width:60px; vertical-align:middle; border-radius:4px; margin-right:10px;">
+          ${item.name} - ₹${item.price} × ${item.qty} = ₹${item.price * item.qty}
+          <a href="/cart/increase/${item.id}" style="margin-left:10px;">➕</a>
+          <a href="/cart/decrease/${item.id}" style="margin-left:5px;">➖</a>
+          <a href="/remove-from-cart/${item.id}" style="color:red; margin-left:10px;">❌ Remove</a>
+        </li>
       `
     )
     .join("");
 
-  let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-  let totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   res.send(`
     <html>
       <head>
         <style>
-          body { font-family: Arial, sans-serif; background:#f2f2f2; margin:0; padding:20px; display:flex; }
-          .cart { flex: 3; background:white; padding:20px; border-radius:8px; margin-right:20px; }
-          .cart-item { display:flex; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #ddd; }
-          .cart-item img { width:80px; height:80px; object-fit:cover; margin-right:15px; border-radius:4px; }
-          .cart-item h4 { margin:0; }
-          .cart-item a { margin-right:10px; text-decoration:none; font-weight:bold; }
-          .summary { flex: 1; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-          .summary h3 { margin-top:0; }
-          .btn { display:block; text-align:center; margin-top:20px; padding:12px; background:#FFD814; border-radius:4px; text-decoration:none; font-weight:bold; color:black; }
+          body { font-family: Arial, sans-serif; background:#fff; padding:40px; }
+          ul { list-style:none; padding:0; }
+          li { margin:15px 0; font-size:1.1rem; }
+          img { vertical-align: middle; }
+          .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
+          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
         </style>
       </head>
       <body>
-        <div class="cart">
-          <h2>Your Shopping Cart</h2>
-          ${cartItems}
-        </div>
-        <div class="summary">
-          <h3>Order Summary</h3>
-          <p>Items: ${totalItems}</p>
-          <p><strong>Subtotal: ₹${totalPrice}</strong></p>
-          <a href="/checkout" class="btn">Proceed to Buy</a>
-        </div>
+        <h2>🛒 Shopping Cart</h2>
+        <ul>${cartItems}</ul>
+        <div class="total">Total: ₹${total}</div>
+        <a href="/checkout" class="btn">Proceed to Checkout</a>
+        <a href="/" class="btn">⬅ Continue Shopping</a>
       </body>
     </html>
   `);
@@ -176,6 +170,12 @@ app.get("/checkout", (req, res) => {
   `);
 });
 
+// API endpoint
+app.get("/products", (req, res) => {
+  res.json(products);
+});
+
+// Start server
 app.listen(port, "0.0.0.0", () => {
   console.log(`✨ Amazon-style store running on port ${port}`);
 });

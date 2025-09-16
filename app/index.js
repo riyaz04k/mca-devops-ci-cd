@@ -35,67 +35,30 @@ function renderStore(productsToShow) {
         <title>Amazon Style Store</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
-          
           .navbar {
-            background: #131921;
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
+            background: #131921; color: white; display: flex;
+            align-items: center; padding: 10px 20px;
           }
           .navbar h1 { margin: 0; font-size: 1.8rem; flex: 1; }
           .search-bar { flex: 2; display: flex; }
-          .search-bar input {
-            flex: 1; padding: 10px; border: none; font-size: 1rem;
-          }
-          .search-bar button {
-            background: #febd69; border: none; padding: 10px 15px; cursor: pointer;
-          }
+          .search-bar input { flex: 1; padding: 10px; border: none; font-size: 1rem; }
+          .search-bar button { background: #febd69; border: none; padding: 10px 15px; cursor: pointer; }
           .nav-links { flex: 1; text-align: right; }
-          .nav-links a {
-            margin-left: 20px; text-decoration: none; color: white; font-weight: bold;
-          }
-          
+          .nav-links a { margin-left: 20px; text-decoration: none; color: white; font-weight: bold; }
           .container { display: flex; }
-          
-          .sidebar {
-            width: 220px; background: white; padding: 20px;
-            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-          }
+          .sidebar { width: 220px; background: white; padding: 20px; box-shadow: 2px 0 6px rgba(0,0,0,0.1); }
           .sidebar h3 { margin-bottom: 15px; color: #333; }
           .sidebar ul { list-style: none; padding: 0; }
           .sidebar li { margin: 10px 0; }
           .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
           .sidebar a:hover { color: #C7511F; }
-          
-          .store {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            padding: 20px;
-          }
-          
-          .product {
-            background: white;
-            border-radius: 5px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-          }
+          .store { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
+          .product { background: white; border-radius: 5px; padding: 15px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
           .product:hover { transform: scale(1.05); }
           .product img { width: 100%; height: 180px; object-fit: cover; }
-          .product h3 { margin: 10px 0; }
           .category { font-size: 0.9rem; color: #007185; }
           .price { font-size: 1.2rem; font-weight: bold; color: #B12704; }
-          
-          .btn {
-            display: inline-block; margin-top: 10px;
-            text-decoration: none; color: black;
-            background: #FFD814; padding: 8px 14px;
-            border-radius: 4px; font-weight: bold;
-          }
+          .btn { display: inline-block; margin-top: 10px; text-decoration: none; color: black; background: #FFD814; padding: 8px 14px; border-radius: 4px; font-weight: bold; }
           .btn:hover { background: #F7CA00; }
         </style>
       </head>
@@ -112,7 +75,6 @@ function renderStore(productsToShow) {
             <a href="/checkout">Checkout</a>
           </div>
         </div>
-        
         <div class="container">
           <aside class="sidebar">
             <h3>Categories</h3>
@@ -124,7 +86,6 @@ function renderStore(productsToShow) {
               <li><a href="/category/Wearables">Wearables</a></li>
             </ul>
           </aside>
-          
           <section class="store">
             ${productCards || "<p>No products found 😢</p>"}
           </section>
@@ -134,18 +95,16 @@ function renderStore(productsToShow) {
   `;
 }
 
-// Home page
-app.get("/", (req, res) => {
-  res.send(renderStore(products));
-});
+// Home
+app.get("/", (req, res) => res.send(renderStore(products)));
 
-// Category pages
+// Category filter
 app.get("/category/:cat", (req, res) => {
   const category = req.params.cat;
   res.send(renderStore(products.filter((p) => p.category === category)));
 });
 
-// Search functionality
+// Search
 app.get("/search", (req, res) => {
   const query = req.query.q ? req.query.q.toLowerCase() : "";
   const results = products.filter(
@@ -163,6 +122,13 @@ app.get("/add-to-cart/:id", (req, res) => {
   res.redirect("/cart");
 });
 
+// Remove from cart
+app.get("/remove-from-cart/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  cart = cart.filter((item, index) => index !== id);
+  res.redirect("/cart");
+});
+
 // Cart Page
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
@@ -175,7 +141,13 @@ app.get("/cart", (req, res) => {
   }
 
   let cartItems = cart
-    .map((p) => `<li>${p.name} - ₹${p.price}</li>`)
+    .map(
+      (p, index) => `
+        <li>
+          ${p.name} - ₹${p.price} 
+          <a href="/remove-from-cart/${index}" style="color:red; margin-left:15px;">🗑 Remove</a>
+        </li>`
+    )
     .join("");
 
   let total = cart.reduce((sum, p) => sum + p.price, 0);
@@ -190,6 +162,8 @@ app.get("/cart", (req, res) => {
           .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
           .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
           .btn:hover { background:#F7CA00; }
+          a.remove { color:red; margin-left:15px; text-decoration:none; }
+          a.remove:hover { text-decoration:underline; }
         </style>
       </head>
       <body>
@@ -215,10 +189,8 @@ app.get("/checkout", (req, res) => {
   `);
 });
 
-// Products API
-app.get("/products", (req, res) => {
-  res.json(products);
-});
+// API endpoint
+app.get("/products", (req, res) => res.json(products));
 
 // Start server
 app.listen(port, "0.0.0.0", () => {

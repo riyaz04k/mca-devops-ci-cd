@@ -4,16 +4,16 @@ const port = process.env.PORT || 3000;
 
 // Dummy product list
 const products = [
-  { id: 1, name: "Laptop", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
-  { id: 2, name: "Phone", price: 500, img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg" },
-  { id: 3, name: "Headphones", price: 100, img: "https://in.static.webuy.com/product_images/Electronics/Headphones%20-%20Apple/SHEAAAPMOESBC_l.jpg" },
-  { id: 4, name: "Smartwatch", price: 200, img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg" }
+  { id: 1, name: "Laptop", category: "Electronics", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
+  { id: 2, name: "Phone", category: "Mobiles", price: 500, img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg" },
+  { id: 3, name: "Headphones", category: "Accessories", price: 100, img: "https://in.static.webuy.com/product_images/Electronics/Headphones%20-%20Apple/SHEAAAPMOESBC_l.jpg" },
+  { id: 4, name: "Smartwatch", category: "Wearables", price: 200, img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg" }
 ];
 
 // In-memory cart
 let cart = [];
 
-// Home page - product store
+// Home page
 app.get("/", (req, res) => {
   let productCards = products
     .map(
@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
       <div class="product">
         <img src="${p.img}" alt="${p.name}">
         <h3>${p.name}</h3>
+        <p class="category">${p.category}</p>
         <p class="price">₹${p.price}</p>
         <a href="/add-to-cart/${p.id}" class="btn">Add to Cart</a>
       </div>
@@ -33,11 +34,8 @@ app.get("/", (req, res) => {
       <head>
         <title>Amazon Style Store</title>
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f2f2f2;
-          }
+          body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
+          
           /* Navbar */
           .navbar {
             background: #131921;
@@ -46,44 +44,42 @@ app.get("/", (req, res) => {
             align-items: center;
             padding: 10px 20px;
           }
-          .navbar h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            flex: 1;
-          }
-          .search-bar {
-            flex: 2;
-            display: flex;
-          }
+          .navbar h1 { margin: 0; font-size: 1.8rem; flex: 1; }
+          .search-bar { flex: 2; display: flex; }
           .search-bar input {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            font-size: 1rem;
+            flex: 1; padding: 10px; border: none; font-size: 1rem;
           }
           .search-bar button {
-            background: #febd69;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
+            background: #febd69; border: none; padding: 10px 15px; cursor: pointer;
           }
-          .nav-links {
-            flex: 1;
-            text-align: right;
-          }
+          .nav-links { flex: 1; text-align: right; }
           .nav-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
+            margin-left: 20px; text-decoration: none; color: white; font-weight: bold;
           }
-          /* Product Grid */
+          
+          /* Layout */
+          .container { display: flex; }
+          
+          /* Sidebar */
+          .sidebar {
+            width: 220px; background: white; padding: 20px;
+            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+          }
+          .sidebar h3 { margin-bottom: 15px; color: #333; }
+          .sidebar ul { list-style: none; padding: 0; }
+          .sidebar li { margin: 10px 0; }
+          .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
+          .sidebar a:hover { color: #C7511F; }
+          
+          /* Store */
           .store {
+            flex: 1;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
             padding: 20px;
           }
+          
           .product {
             background: white;
             border-radius: 5px;
@@ -92,40 +88,24 @@ app.get("/", (req, res) => {
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             transition: transform 0.2s;
           }
-          .product:hover {
-            transform: scale(1.05);
-          }
-          .product img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-          }
-          .product h3 {
-            margin: 10px 0;
-          }
-          .price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #B12704;
-          }
+          .product:hover { transform: scale(1.05); }
+          .product img { width: 100%; height: 180px; object-fit: cover; }
+          .product h3 { margin: 10px 0; }
+          .category { font-size: 0.9rem; color: #007185; }
+          .price { font-size: 1.2rem; font-weight: bold; color: #B12704; }
+          
           .btn {
-            display: inline-block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: black;
-            background: #FFD814;
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-weight: bold;
+            display: inline-block; margin-top: 10px;
+            text-decoration: none; color: black;
+            background: #FFD814; padding: 8px 14px;
+            border-radius: 4px; font-weight: bold;
           }
-          .btn:hover {
-            background: #F7CA00;
-          }
+          .btn:hover { background: #F7CA00; }
         </style>
       </head>
       <body>
         <div class="navbar">
-          <h1>🛒 My Store</h1>
+          <h1>🛒 My Amazon Store</h1>
           <div class="search-bar">
             <input type="text" placeholder="Search for products...">
             <button>🔍</button>
@@ -136,9 +116,22 @@ app.get("/", (req, res) => {
             <a href="/checkout">Checkout</a>
           </div>
         </div>
-        <section class="store">
-          ${productCards}
-        </section>
+        
+        <div class="container">
+          <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="#">Electronics</a></li>
+              <li><a href="#">Mobiles</a></li>
+              <li><a href="#">Accessories</a></li>
+              <li><a href="#">Wearables</a></li>
+            </ul>
+          </aside>
+          
+          <section class="store">
+            ${productCards}
+          </section>
+        </div>
       </body>
     </html>
   `);
@@ -151,7 +144,7 @@ app.get("/add-to-cart/:id", (req, res) => {
   res.redirect("/cart");
 });
 
-// View cart
+// Cart Page
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
     return res.send(`
@@ -176,7 +169,7 @@ app.get("/cart", (req, res) => {
           ul { list-style:none; padding:0; }
           li { margin:10px 0; font-size:1.1rem; }
           .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
-          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; }
+          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
           .btn:hover { background:#F7CA00; }
         </style>
       </head>
@@ -193,9 +186,9 @@ app.get("/cart", (req, res) => {
 
 // Checkout
 app.get("/checkout", (req, res) => {
-  cart = []; // Empty cart
+  cart = []; 
   res.send(`
-    <html><body style="font-family:Arial; text-align:center; padding:50px;">
+    <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
       <h2>✅ Order placed successfully!</h2>
       <p>📦 Thank you for shopping with us. Your order will be delivered soon.</p>
       <a href="/" style="background:#FFD814; padding:12px 20px; border-radius:4px; text-decoration:none; color:black; font-weight:bold;">⬅ Back to Home</a>
@@ -203,13 +196,13 @@ app.get("/checkout", (req, res) => {
   `);
 });
 
-// API endpoint - JSON products
+// Products API
 app.get("/products", (req, res) => {
   res.json(products);
 });
 
 // Start server
 app.listen(port, "0.0.0.0", () => {
-  console.log(`✨ Amazon-like store running on port ${port}`);
+  console.log(`✨ Amazon-style colorful store running on port ${port}`);
 });
 

@@ -13,9 +13,51 @@ const products = [
 // In-memory cart
 let cart = [];
 
-// Function to render store
-function renderStore(productsToShow) {
-  let productCards = productsToShow
+function findCartItem(id) {
+  return cart.find((item) => item.id === id);
+}
+
+// Add to cart
+app.get("/add-to-cart/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const product = products.find((p) => p.id === id);
+  if (product) {
+    let cartItem = findCartItem(id);
+    if (cartItem) {
+      cartItem.qty += 1;
+    } else {
+      cart.push({ ...product, qty: 1 });
+    }
+  }
+  res.redirect("/cart");
+});
+
+// Increase / Decrease / Remove
+app.get("/cart/increase/:id", (req, res) => {
+  let item = findCartItem(parseInt(req.params.id));
+  if (item) item.qty++;
+  res.redirect("/cart");
+});
+
+app.get("/cart/decrease/:id", (req, res) => {
+  let item = findCartItem(parseInt(req.params.id));
+  if (item) {
+    item.qty--;
+    if (item.qty <= 0) {
+      cart = cart.filter((i) => i.id !== item.id);
+    }
+  }
+  res.redirect("/cart");
+});
+
+app.get("/remove-from-cart/:id", (req, res) => {
+  cart = cart.filter((i) => i.id !== parseInt(req.params.id));
+  res.redirect("/cart");
+});
+
+// Home Page
+app.get("/", (req, res) => {
+  let productCards = products
     .map(
       (p) => `
       <div class="product">
@@ -29,107 +71,38 @@ function renderStore(productsToShow) {
     )
     .join("");
 
-  return `
+  res.send(`
     <html>
       <head>
         <title>Amazon Style Store</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
-          .navbar {
-            background: #131921; color: white; display: flex;
-            align-items: center; padding: 10px 20px;
-          }
-          .navbar h1 { margin: 0; font-size: 1.8rem; flex: 1; }
-          .search-bar { flex: 2; display: flex; }
-          .search-bar input { flex: 1; padding: 10px; border: none; font-size: 1rem; }
-          .search-bar button { background: #febd69; border: none; padding: 10px 15px; cursor: pointer; }
+          .navbar { background: #131921; color: white; display: flex; align-items: center; padding: 10px 20px; }
+          .navbar h1 { flex: 1; margin: 0; }
           .nav-links { flex: 1; text-align: right; }
           .nav-links a { margin-left: 20px; text-decoration: none; color: white; font-weight: bold; }
-          .container { display: flex; }
-          .sidebar { width: 220px; background: white; padding: 20px; box-shadow: 2px 0 6px rgba(0,0,0,0.1); }
-          .sidebar h3 { margin-bottom: 15px; color: #333; }
-          .sidebar ul { list-style: none; padding: 0; }
-          .sidebar li { margin: 10px 0; }
-          .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
-          .sidebar a:hover { color: #C7511F; }
-          .store { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
-          .product { background: white; border-radius: 5px; padding: 15px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
-          .product:hover { transform: scale(1.05); }
-          .product img { width: 100%; height: 180px; object-fit: cover; }
-          .category { font-size: 0.9rem; color: #007185; }
+          .store { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
+          .product { background: white; border-radius: 5px; padding: 15px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+          .product img { width: 100%; height: 160px; object-fit: cover; }
           .price { font-size: 1.2rem; font-weight: bold; color: #B12704; }
-          .btn { display: inline-block; margin-top: 10px; text-decoration: none; color: black; background: #FFD814; padding: 8px 14px; border-radius: 4px; font-weight: bold; }
-          .btn:hover { background: #F7CA00; }
+          .btn { display: inline-block; margin-top: 10px; text-decoration: none; background: #FFD814; padding: 8px 14px; border-radius: 4px; font-weight: bold; color: black; }
         </style>
       </head>
       <body>
         <div class="navbar">
           <h1>🛒 My Amazon Store</h1>
-          <form action="/search" method="get" class="search-bar">
-            <input type="text" name="q" placeholder="Search for products...">
-            <button type="submit">🔍</button>
-          </form>
           <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/cart">Cart (${cart.length})</a>
-            <a href="/checkout">Checkout</a>
+            <a href="/cart">Cart (${cart.reduce((sum, item) => sum + item.qty, 0)})</a>
           </div>
         </div>
-        <div class="container">
-          <aside class="sidebar">
-            <h3>Categories</h3>
-            <ul>
-              <li><a href="/">All Products</a></li>
-              <li><a href="/category/Electronics">Electronics</a></li>
-              <li><a href="/category/Mobiles">Mobiles</a></li>
-              <li><a href="/category/Accessories">Accessories</a></li>
-              <li><a href="/category/Wearables">Wearables</a></li>
-            </ul>
-          </aside>
-          <section class="store">
-            ${productCards || "<p>No products found 😢</p>"}
-          </section>
-        </div>
+        <section class="store">${productCards}</section>
       </body>
     </html>
-  `;
-}
-
-// Home
-app.get("/", (req, res) => res.send(renderStore(products)));
-
-// Category filter
-app.get("/category/:cat", (req, res) => {
-  const category = req.params.cat;
-  res.send(renderStore(products.filter((p) => p.category === category)));
+  `);
 });
 
-// Search
-app.get("/search", (req, res) => {
-  const query = req.query.q ? req.query.q.toLowerCase() : "";
-  const results = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query)
-  );
-  res.send(renderStore(results));
-});
-
-// Add to cart
-app.get("/add-to-cart/:id", (req, res) => {
-  const product = products.find((p) => p.id == req.params.id);
-  if (product) cart.push(product);
-  res.redirect("/cart");
-});
-
-// Remove from cart
-app.get("/remove-from-cart/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  cart = cart.filter((item, index) => index !== id);
-  res.redirect("/cart");
-});
-
-// Cart Page
+// Cart Page with Order Summary
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
     return res.send(`
@@ -142,36 +115,50 @@ app.get("/cart", (req, res) => {
 
   let cartItems = cart
     .map(
-      (p, index) => `
-        <li>
-          ${p.name} - ₹${p.price} 
-          <a href="/remove-from-cart/${index}" style="color:red; margin-left:15px;">🗑 Remove</a>
-        </li>`
+      (item) => `
+        <div class="cart-item">
+          <img src="${item.img}" alt="${item.name}">
+          <div class="info">
+            <h4>${item.name}</h4>
+            <p>₹${item.price} × ${item.qty} = ₹${item.price * item.qty}</p>
+            <a href="/cart/increase/${item.id}">➕</a>
+            <a href="/cart/decrease/${item.id}">➖</a>
+            <a href="/remove-from-cart/${item.id}" style="color:red;">❌ Remove</a>
+          </div>
+        </div>
+      `
     )
     .join("");
 
-  let total = cart.reduce((sum, p) => sum + p.price, 0);
+  let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+  let totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   res.send(`
     <html>
       <head>
         <style>
-          body { font-family: Arial, sans-serif; background:#fff; padding:40px; }
-          ul { list-style:none; padding:0; }
-          li { margin:10px 0; font-size:1.1rem; }
-          .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
-          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
-          .btn:hover { background:#F7CA00; }
-          a.remove { color:red; margin-left:15px; text-decoration:none; }
-          a.remove:hover { text-decoration:underline; }
+          body { font-family: Arial, sans-serif; background:#f2f2f2; margin:0; padding:20px; display:flex; }
+          .cart { flex: 3; background:white; padding:20px; border-radius:8px; margin-right:20px; }
+          .cart-item { display:flex; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #ddd; }
+          .cart-item img { width:80px; height:80px; object-fit:cover; margin-right:15px; border-radius:4px; }
+          .cart-item h4 { margin:0; }
+          .cart-item a { margin-right:10px; text-decoration:none; font-weight:bold; }
+          .summary { flex: 1; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+          .summary h3 { margin-top:0; }
+          .btn { display:block; text-align:center; margin-top:20px; padding:12px; background:#FFD814; border-radius:4px; text-decoration:none; font-weight:bold; color:black; }
         </style>
       </head>
       <body>
-        <h2>🛒 Shopping Cart</h2>
-        <ul>${cartItems}</ul>
-        <div class="total">Total: ₹${total}</div>
-        <a href="/checkout" class="btn">Proceed to Checkout</a>
-        <a href="/" class="btn">⬅ Continue Shopping</a>
+        <div class="cart">
+          <h2>Your Shopping Cart</h2>
+          ${cartItems}
+        </div>
+        <div class="summary">
+          <h3>Order Summary</h3>
+          <p>Items: ${totalItems}</p>
+          <p><strong>Subtotal: ₹${totalPrice}</strong></p>
+          <a href="/checkout" class="btn">Proceed to Buy</a>
+        </div>
       </body>
     </html>
   `);
@@ -189,11 +176,7 @@ app.get("/checkout", (req, res) => {
   `);
 });
 
-// API endpoint
-app.get("/products", (req, res) => res.json(products));
-
-// Start server
 app.listen(port, "0.0.0.0", () => {
-  console.log(`✨ Amazon-style colorful store running on port ${port}`);
+  console.log(`✨ Amazon-style store running on port ${port}`);
 });
 

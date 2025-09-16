@@ -13,9 +13,9 @@ const products = [
 // In-memory cart
 let cart = [];
 
-// Home page
-app.get("/", (req, res) => {
-  let productCards = products
+// Function to render store
+function renderStore(productsToShow) {
+  let productCards = productsToShow
     .map(
       (p) => `
       <div class="product">
@@ -29,14 +29,13 @@ app.get("/", (req, res) => {
     )
     .join("");
 
-  res.send(`
+  return `
     <html>
       <head>
         <title>Amazon Style Store</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
           
-          /* Navbar */
           .navbar {
             background: #131921;
             color: white;
@@ -57,10 +56,8 @@ app.get("/", (req, res) => {
             margin-left: 20px; text-decoration: none; color: white; font-weight: bold;
           }
           
-          /* Layout */
           .container { display: flex; }
           
-          /* Sidebar */
           .sidebar {
             width: 220px; background: white; padding: 20px;
             box-shadow: 2px 0 6px rgba(0,0,0,0.1);
@@ -71,7 +68,6 @@ app.get("/", (req, res) => {
           .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
           .sidebar a:hover { color: #C7511F; }
           
-          /* Store */
           .store {
             flex: 1;
             display: grid;
@@ -106,10 +102,10 @@ app.get("/", (req, res) => {
       <body>
         <div class="navbar">
           <h1>🛒 My Amazon Store</h1>
-          <div class="search-bar">
-            <input type="text" placeholder="Search for products...">
-            <button>🔍</button>
-          </div>
+          <form action="/search" method="get" class="search-bar">
+            <input type="text" name="q" placeholder="Search for products...">
+            <button type="submit">🔍</button>
+          </form>
           <div class="nav-links">
             <a href="/">Home</a>
             <a href="/cart">Cart (${cart.length})</a>
@@ -121,20 +117,43 @@ app.get("/", (req, res) => {
           <aside class="sidebar">
             <h3>Categories</h3>
             <ul>
-              <li><a href="#">Electronics</a></li>
-              <li><a href="#">Mobiles</a></li>
-              <li><a href="#">Accessories</a></li>
-              <li><a href="#">Wearables</a></li>
+              <li><a href="/">All Products</a></li>
+              <li><a href="/category/Electronics">Electronics</a></li>
+              <li><a href="/category/Mobiles">Mobiles</a></li>
+              <li><a href="/category/Accessories">Accessories</a></li>
+              <li><a href="/category/Wearables">Wearables</a></li>
             </ul>
           </aside>
           
           <section class="store">
-            ${productCards}
+            ${productCards || "<p>No products found 😢</p>"}
           </section>
         </div>
       </body>
     </html>
-  `);
+  `;
+}
+
+// Home page
+app.get("/", (req, res) => {
+  res.send(renderStore(products));
+});
+
+// Category pages
+app.get("/category/:cat", (req, res) => {
+  const category = req.params.cat;
+  res.send(renderStore(products.filter((p) => p.category === category)));
+});
+
+// Search functionality
+app.get("/search", (req, res) => {
+  const query = req.query.q ? req.query.q.toLowerCase() : "";
+  const results = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query)
+  );
+  res.send(renderStore(results));
 });
 
 // Add to cart
@@ -186,7 +205,7 @@ app.get("/cart", (req, res) => {
 
 // Checkout
 app.get("/checkout", (req, res) => {
-  cart = []; 
+  cart = [];
   res.send(`
     <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
       <h2>✅ Order placed successfully!</h2>

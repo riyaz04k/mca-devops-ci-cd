@@ -119,7 +119,7 @@ function renderStore(productsToShow) {
             <ul>
               <li><a href="/">All Products</a></li>
               <li><a href="/category/Electronics">Electronics</a></li>
-              <li><a href="/category/Mobiles">Mobiles</a></li>
+              <li><a href="/category/Phones">Mobiles</a></li>
               <li><a href="/category/Accessories">Accessories</a></li>
               <li><a href="/category/Wearables">Wearables</a></li>
             </ul>

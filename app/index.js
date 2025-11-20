@@ -4,10 +4,34 @@ const port = process.env.PORT || 3000;
 
 // Dummy product list
 const products = [
-  { id: 1, name: "Laptop", category: "Electronics", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
-  { id: 2, name: "Phone", category: "Mobiles", price: 500, img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg" },
-  { id: 3, name: "Headphones", category: "Accessories", price: 100, img: "https://in.static.webuy.com/product_images/Electronics/Headphones%20-%20Apple/SHEAAAPMOESBC_l.jpg" },
-  { id: 4, name: "Smartwatch", category: "Wearables", price: 200, img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg" }
+  {
+    id: 1,
+    name: "Laptop",
+    category: "Electronics",
+    price: 800,
+    img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg"
+  },
+  {
+    id: 2,
+    name: "Phone",
+    category: "Mobiles",
+    price: 500,
+    img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg"
+  },
+  {
+    id: 3,
+    name: "Headphones",
+    category: "Accessories",
+    price: 100,
+    img: "https://in.static.webuy.com/product_images/Electronics/Headphones%20-%20Apple/SHEAAAPMOESBC_l.jpg"
+  },
+  {
+    id: 4,
+    name: "Smartwatch",
+    category: "Wearables",
+    price: 200,
+    img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg"
+  }
 ];
 
 // In-memory cart
@@ -101,7 +125,7 @@ function renderStore(productsToShow) {
       </head>
       <body>
         <div class="navbar">
-          <h1>🛒Online Store amozon</h1>
+          <h1>🛒Online Store Amazon</h1>
           <form action="/search" method="get" class="search-bar">
             <input type="text" name="q" placeholder="Search for products...">
             <button type="submit">🔍</button>
@@ -119,7 +143,7 @@ function renderStore(productsToShow) {
             <ul>
               <li><a href="/">All Products</a></li>
               <li><a href="/category/Electronics">Electronics</a></li>
-              <li><a href="/category/Phones">Mobiles</a></li>
+              <li><a href="/category/Mobiles">Mobiles</a></li>
               <li><a href="/category/Accessories">Accessories</a></li>
               <li><a href="/category/Wearables">Wearables</a></li>
             </ul>
@@ -134,20 +158,20 @@ function renderStore(productsToShow) {
   `;
 }
 
-// Home page
+// Home
 app.get("/", (req, res) => {
   res.send(renderStore(products));
 });
 
-// Category pages
+// Category
 app.get("/category/:cat", (req, res) => {
   const category = req.params.cat;
   res.send(renderStore(products.filter((p) => p.category === category)));
 });
 
-// Search functionality
+// Search
 app.get("/search", (req, res) => {
-  const query = req.query.q ? req.query.q.toLowerCase() : "";
+  const query = (req.query.q || "").toLowerCase();
   const results = products.filter(
     (p) =>
       p.name.toLowerCase().includes(query) ||
@@ -166,11 +190,11 @@ app.get("/add-to-cart/:id", (req, res) => {
 // Remove from cart
 app.get("/remove-from-cart/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  cart = cart.filter((p, index) => index !== cart.findIndex((item) => item.id === id));
+  cart = cart.filter((item) => item.id !== id);
   res.redirect("/cart");
 });
 
-// Cart Page
+// Cart page
 app.get("/cart", (req, res) => {
   if (cart.length === 0) {
     return res.send(`
@@ -181,13 +205,50 @@ app.get("/cart", (req, res) => {
     `);
   }
 
-  let cartItems = cart
+  let items = cart
     .map(
-      (p, i) => `
-        <li>
-          ${p.name} - ₹${p.price}
-          <a href="/remove-from-cart/${p.id}" style="color:red; margin-left:10px;">❌ Remove</a>
-        </li>
-      `
+      (p) => `
+      <li>
+        ${p.name} - ₹${p.price}
+        <a href="/remove-from-cart/${p.id}" style="color:red; margin-left:10px;">❌ Remove</a>
+      </li>`
     )
+    .join("");
+
+  let total = cart.reduce((sum, p) => sum + p.price, 0);
+
+  res.send(`
+    <html>
+    <body style="font-family:Arial; background:#fff; padding:40px;">
+      <h2>🛒 Shopping Cart</h2>
+      <ul>${items}</ul>
+      <h3>Total: ₹${total}</h3>
+      <a href="/checkout" class="btn" style="background:#FFD814; padding:10px 20px; text-decoration:none;">Checkout</a>
+      <a href="/" class="btn" style="background:#FFD814; padding:10px 20px; text-decoration:none;">⬅ Continue Shopping</a>
+    </body>
+    </html>
+  `);
+});
+
+// Checkout
+app.get("/checkout", (req, res) => {
+  cart = [];
+  res.send(`
+    <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
+      <h2>✅ Order placed successfully!</h2>
+      <p>Your order will be delivered soon.</p>
+      <a href="/" style="background:#FFD814; padding:12px 20px; border-radius:4px; text-decoration:none; color:black;">⬅ Back to Home</a>
+    </body></html>
+  `);
+});
+
+// Products API
+app.get("/products", (req, res) => {
+  res.json(products);
+});
+
+// Start server
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✨ Amazon-style store running on port ${port}`);
+});
 

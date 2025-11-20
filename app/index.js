@@ -1,3 +1,7 @@
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 3000;
+
 // Dummy product list
 const products = [
   { id: 1, name: "Laptop", category: "Electronics", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
@@ -186,52 +190,4 @@ app.get("/cart", (req, res) => {
         </li>
       `
     )
-    .join("");
-
-  let total = cart.reduce((sum, p) => sum + p.price, 0);
-
-  res.send(`
-    <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; background:#fff; padding:40px; }
-          ul { list-style:none; padding:0; }
-          li { margin:10px 0; font-size:1.1rem; }
-          .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
-          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
-          .btn:hover { background:#F7CA00; }
-        </style>
-      </head>
-      <body>
-        <h2>🛒 Shopping Cart</h2>
-        <ul>${cartItems}</ul>
-        <div class="total">Total: ₹${total}</div>
-        <a href="/checkout" class="btn">Proceed to Checkout</a>
-        <a href="/" class="btn">⬅ Continue Shopping</a>
-      </body>
-    </html>
-  `);
-});
-
-// Checkout
-app.get("/checkout", (req, res) => {
-  cart = [];
-  res.send(`
-    <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
-      <h2>✅ Order placed successfully!</h2>
-      <p>📦 Thank you for shopping with us. Your order will be delivered soon.</p>
-      <a href="/" style="background:#FFD814; padding:12px 20px; border-radius:4px; text-decoration:none; color:black; font-weight:bold;">⬅ Back to Home</a>
-    </body></html>
-  `);
-});
-
-// Products API
-app.get("/products", (req, res) => {
-  res.json(products);
-});
-
-// Start server
-app.listen(port, "0.0.0.0", () => {
-  console.log(`✨ Amazon-style colorful store running on port ${port}`);
-});
 

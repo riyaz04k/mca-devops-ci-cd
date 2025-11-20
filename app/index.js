@@ -32,7 +32,7 @@ function renderStore(productsToShow) {
   return `
     <html>
       <head>
-        <title>Amazon Style Store</title>
+        <title>Amazon Store</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
           

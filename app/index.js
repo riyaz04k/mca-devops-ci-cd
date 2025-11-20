@@ -1,16 +1,4 @@
-// FULLY UPDATED — CLEAN, RESPONSIVE & PERFECTLY FITTING PAGE
-// Modern, Animated Online Store (Express.js)
-// ⚡ Fully mobile‑responsive
-// 🎨 Smooth animations
-// 📦 Beautiful product cards
-// 🧭 Clean navigation
-// 💯 Everything fits perfectly — no overflow or breaks
-
-const express = require("express");
-const app = express();
-const port = process.env.PORT || 3000;
-
-// PRODUCT LIST
+// Dummy product list
 const products = [
   { id: 1, name: "Laptop", category: "Electronics", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
   { id: 2, name: "Phone", category: "Mobiles", price: 500, img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg" },
@@ -18,232 +6,232 @@ const products = [
   { id: 4, name: "Smartwatch", category: "Wearables", price: 200, img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg" }
 ];
 
+// In-memory cart
 let cart = [];
 
-function renderPage(content) {
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Animated Store</title>
-
-    <style>
-      body {
-        margin: 0;
-        font-family: "Poppins", sans-serif;
-        background: #f7f7f7;
-      }
-
-      /* NAVBAR */
-      .navbar {
-        background: #111827;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 25px;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-      }
-      .navbar h1 {
-        margin: 0;
-        font-size: 22px;
-      }
-
-      .nav-links a {
-        color: white;
-        margin-left: 15px;
-        text-decoration: none;
-        font-size: 15px;
-        transition: 0.3s;
-      }
-      .nav-links a:hover {
-        color: #FCD34D;
-      }
-
-      /* SEARCH BAR */
-      .search-bar {
-        display: flex;
-      }
-      .search-bar input {
-        padding: 8px;
-        border-radius: 6px 0 0 6px;
-        border: none;
-        width: 180px;
-      }
-      .search-bar button {
-        padding: 8px 12px;
-        background: #FCD34D;
-        border: none;
-        border-radius: 0 6px 6px 0;
-        cursor: pointer;
-      }
-
-      /* LAYOUT */
-      .container {
-        display: flex;
-        flex-wrap: wrap;
-      }
-
-      .sidebar {
-        width: 240px;
-        min-height: 100vh;
-        background: #ffffff;
-        padding: 20px;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-      }
-      .sidebar a {
-        text-decoration: none;
-        display: block;
-        padding: 10px 0;
-        color: #374151;
-        font-weight: 600;
-        transition: 0.3s;
-      }
-      .sidebar a:hover {
-        color: #DC2626;
-      }
-
-      /* PRODUCT GRID */
-      .store {
-        flex: 1;
-        padding: 25px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
-      }
-
-      .product {
-        background: white;
-        border-radius: 10px;
-        padding: 15px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: 0.3s;
-      }
-      .product:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-      }
-      .product img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-        border-radius: 8px;
-      }
-
-      .btn {
-        background: #FDE047;
-        padding: 8px 12px;
-        border-radius: 6px;
-        display: inline-block;
-        text-decoration: none;
-        color: #000;
-        margin-top: 10px;
-        font-weight: 600;
-      }
-      .btn:hover {
-        background: #FACC15;
-      }
-
-      /* MOBILE FIX: Sidebar stacks correctly */
-      @media (max-width: 900px) {
-        .sidebar {
-          width: 100%;
-          min-height: auto;
-        }
-        .container {
-          flex-direction: column;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="navbar">
-      <h1>🛒 Animated Store</h1>
-      <form class="search-bar" action="/search">
-        <input type="text" name="q" placeholder="Search...">
-        <button>🔍</button>
-      </form>
-      <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/cart">Cart (${cart.length})</a>
-        <a href="/checkout">Checkout</a>
-      </div>
-    </div>
-
-    ${content}
-  </body>
-  </html>`;
-}
-
-function renderStore(items) {
-  let cards = items.map(
-    p => `
+// Function to render store
+function renderStore(productsToShow) {
+  let productCards = productsToShow
+    .map(
+      (p) => `
       <div class="product">
-        <img src="${p.img}" />
+        <img src="${p.img}" alt="${p.name}">
         <h3>${p.name}</h3>
-        <p>${p.category}</p>
-        <p><b>₹${p.price}</b></p>
-        <a class="btn" href="/add/${p.id}">Add to Cart</a>
+        <p class="category">${p.category}</p>
+        <p class="price">₹${p.price}</p>
+        <a href="/add-to-cart/${p.id}" class="btn">Add to Cart</a>
       </div>
     `
-  ).join("");
+    )
+    .join("");
 
-  return renderPage(`
-    <div class="container">
-      <aside class="sidebar">
-        <h3>Categories</h3>
-        <a href="/">All</a>
-        <a href="/category/Electronics">Electronics</a>
-        <a href="/category/Mobiles">Mobiles</a>
-        <a href="/category/Accessories">Accessories</a>
-        <a href="/category/Wearables">Wearables</a>
-      </aside>
+  return `
+    <html>
+      <head>
+        <title>Amazon Store</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
 
-      <section class="store">
-        ${cards}
-      </section>
-    </div>
-  `);
+          .navbar {
+            background: #131921;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+          }
+          .navbar h1 { margin: 0; font-size: 1.8rem; flex: 1; }
+          .search-bar { flex: 2; display: flex; }
+          .search-bar input {
+            flex: 1; padding: 10px; border: none; font-size: 1rem;
+          }
+          .search-bar button {
+            background: #febd69; border: none; padding: 10px 15px; cursor: pointer;
+          }
+          .nav-links { flex: 1; text-align: right; }
+          .nav-links a {
+            margin-left: 20px; text-decoration: none; color: white; font-weight: bold;
+          }
+
+          .container { display: flex; }
+
+          .sidebar {
+            width: 220px; background: white; padding: 20px;
+            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+          }
+          .sidebar h3 { margin-bottom: 15px; color: #333; }
+          .sidebar ul { list-style: none; padding: 0; }
+          .sidebar li { margin: 10px 0; }
+          .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
+          .sidebar a:hover { color: #C7511F; }
+
+          .store {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+          }
+
+          .product {
+            background: white;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+          }
+          .product:hover { transform: scale(1.05); }
+          .product img { width: 100%; height: 180px; object-fit: cover; }
+          .product h3 { margin: 10px 0; }
+          .category { font-size: 0.9rem; color: #007185; }
+          .price { font-size: 1.2rem; font-weight: bold; color: #B12704; }
+
+          .btn {
+            display: inline-block; margin-top: 10px;
+            text-decoration: none; color: black;
+            background: #FFD814; padding: 8px 14px;
+            border-radius: 4px; font-weight: bold;
+          }
+          .btn:hover { background: #F7CA00; }
+        </style>
+      </head>
+      <body>
+        <div class="navbar">
+          <h1>🛒Online Store amozon</h1>
+          <form action="/search" method="get" class="search-bar">
+            <input type="text" name="q" placeholder="Search for products...">
+            <button type="submit">🔍</button>
+          </form>
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/cart">Cart (${cart.length})</a>
+            <a href="/checkout">Checkout</a>
+          </div>
+        </div>
+
+        <div class="container">
+          <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="/">All Products</a></li>
+              <li><a href="/category/Electronics">Electronics</a></li>
+              <li><a href="/category/Phones">Mobiles</a></li>
+              <li><a href="/category/Accessories">Accessories</a></li>
+              <li><a href="/category/Wearables">Wearables</a></li>
+            </ul>
+          </aside>
+
+          <section class="store">
+            ${productCards || "<p>No products found 😢</p>"}
+          </section>
+        </div>
+      </body>
+    </html>
+  `;
 }
 
-// ROUTES
-app.get("/", (req, res) => res.send(renderStore(products)));
-app.get("/category/:c", (req, res) => res.send(renderStore(products.filter(p => p.category === req.params.c))));
-app.get("/search", (req, res) => {
-  let q = req.query.q?.toLowerCase() || "";
-  res.send(renderStore(products.filter(p => p.name.toLowerCase().includes(q))));
+// Home page
+app.get("/", (req, res) => {
+  res.send(renderStore(products));
 });
 
-app.get("/add/:id", (req, res) => {
-  let p = products.find(x => x.id == req.params.id);
-  if (p) cart.push(p);
+// Category pages
+app.get("/category/:cat", (req, res) => {
+  const category = req.params.cat;
+  res.send(renderStore(products.filter((p) => p.category === category)));
+});
+
+// Search functionality
+app.get("/search", (req, res) => {
+  const query = req.query.q ? req.query.q.toLowerCase() : "";
+  const results = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query)
+  );
+  res.send(renderStore(results));
+});
+
+// Add to cart
+app.get("/add-to-cart/:id", (req, res) => {
+  const product = products.find((p) => p.id == req.params.id);
+  if (product) cart.push(product);
   res.redirect("/cart");
 });
 
-app.get("/cart", (req, res) => {
-  let total = cart.reduce((a,b)=>a+b.price,0);
-  let items = cart.map(i => `<li>${i.name} - ₹${i.price}</li>`).join("");
-
-  res.send(renderPage(`
-    <div style="padding:30px;">
-      <h2>Your Cart</h2>
-      <ul>${items}</ul>
-      <h3>Total: ₹${total}</h3>
-      <a class="btn" href="/checkout">Checkout</a>
-    </div>
-  `));
+// Remove from cart
+app.get("/remove-from-cart/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  cart = cart.filter((p, index) => index !== cart.findIndex((item) => item.id === id));
+  res.redirect("/cart");
 });
 
+// Cart Page
+app.get("/cart", (req, res) => {
+  if (cart.length === 0) {
+    return res.send(`
+      <html><body style="text-align:center; font-family:Arial; background:#f8f9fa; padding:40px;">
+      <h2>🛒 Your cart is empty.</h2>
+      <a href="/" style="background:#FFD814; padding:10px 20px; text-decoration:none; color:black; border-radius:4px;">⬅ Continue Shopping</a>
+      </body></html>
+    `);
+  }
+
+  let cartItems = cart
+    .map(
+      (p, i) => `
+        <li>
+          ${p.name} - ₹${p.price}
+          <a href="/remove-from-cart/${p.id}" style="color:red; margin-left:10px;">❌ Remove</a>
+        </li>
+      `
+    )
+    .join("");
+
+  let total = cart.reduce((sum, p) => sum + p.price, 0);
+
+  res.send(`
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; background:#fff; padding:40px; }
+          ul { list-style:none; padding:0; }
+          li { margin:10px 0; font-size:1.1rem; }
+          .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
+          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
+          .btn:hover { background:#F7CA00; }
+        </style>
+      </head>
+      <body>
+        <h2>🛒 Shopping Cart</h2>
+        <ul>${cartItems}</ul>
+        <div class="total">Total: ₹${total}</div>
+        <a href="/checkout" class="btn">Proceed to Checkout</a>
+        <a href="/" class="btn">⬅ Continue Shopping</a>
+      </body>
+    </html>
+  `);
+});
+
+// Checkout
 app.get("/checkout", (req, res) => {
   cart = [];
-  res.send(renderPage(`<div style="padding:40px;"><h2>Order Successful ✔️</h2></div>`));
+  res.send(`
+    <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
+      <h2>✅ Order placed successfully!</h2>
+      <p>📦 Thank you for shopping with us. Your order will be delivered soon.</p>
+      <a href="/" style="background:#FFD814; padding:12px 20px; border-radius:4px; text-decoration:none; color:black; font-weight:bold;">⬅ Back to Home</a>
+    </body></html>
+  `);
 });
 
-app.listen(port, () => console.log("Running on port " + port));
+// Products API
+app.get("/products", (req, res) => {
+  res.json(products);
+});
+
+// Start server
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✨ Amazon-style colorful store running on port ${port}`);
+});
 

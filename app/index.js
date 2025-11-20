@@ -1,8 +1,11 @@
+// Updated Animated & Attractive Online Store
+// Full Express.js App with Enhanced UI, Animations & Modern Styling
+
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Dummy product list
+// Dummy Products
 const products = [
   { id: 1, name: "Laptop", category: "Electronics", price: 800, img: "https://cdn.thewirecutter.com/wp-content/media/2024/11/cheapgaminglaptops-2048px-7981.jpg" },
   { id: 2, name: "Phone", category: "Mobiles", price: 500, img: "https://www.lifewire.com/thmb/XzxH-f88I5FObXkg60X6rmBCEYI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Image031-8c1279df682e44b8ad1494fe7f64298a.jpg" },
@@ -10,232 +13,203 @@ const products = [
   { id: 4, name: "Smartwatch", category: "Wearables", price: 200, img: "https://5.imimg.com/data5/SELLER/Default/2020/12/KN/WP/OI/5388819/t500-smartwatch.jpg" }
 ];
 
-// In-memory cart
 let cart = [];
 
-// Function to render store
 function renderStore(productsToShow) {
-  let productCards = productsToShow
+  let items = productsToShow
     .map(
       (p) => `
       <div class="product">
-        <img src="${p.img}" alt="${p.name}">
+        <img src="${p.img}" alt="${p.name}" class="fade-in">
         <h3>${p.name}</h3>
         <p class="category">${p.category}</p>
         <p class="price">₹${p.price}</p>
-        <a href="/add-to-cart/${p.id}" class="btn">Add to Cart</a>
-      </div>
-    `
+        <a href="/add-to-cart/${p.id}" class="btn add">
+          Add to Cart
+        </a>
+      </div>`
     )
     .join("");
 
   return `
-    <html>
-      <head>
-        <title>Amazon Store</title>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; }
-          
-          .navbar {
-            background: #131921;
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-          }
-          .navbar h1 { margin: 0; font-size: 1.8rem; flex: 1; }
-          .search-bar { flex: 2; display: flex; }
-          .search-bar input {
-            flex: 1; padding: 10px; border: none; font-size: 1rem;
-          }
-          .search-bar button {
-            background: #febd69; border: none; padding: 10px 15px; cursor: pointer;
-          }
-          .nav-links { flex: 1; text-align: right; }
-          .nav-links a {
-            margin-left: 20px; text-decoration: none; color: white; font-weight: bold;
-          }
-          
-          .container { display: flex; }
-          
-          .sidebar {
-            width: 220px; background: white; padding: 20px;
-            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-          }
-          .sidebar h3 { margin-bottom: 15px; color: #333; }
-          .sidebar ul { list-style: none; padding: 0; }
-          .sidebar li { margin: 10px 0; }
-          .sidebar a { text-decoration: none; color: #007185; font-weight: bold; }
-          .sidebar a:hover { color: #C7511F; }
-          
-          .store {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            padding: 20px;
-          }
-          
-          .product {
-            background: white;
-            border-radius: 5px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-          }
-          .product:hover { transform: scale(1.05); }
-          .product img { width: 100%; height: 180px; object-fit: cover; }
-          .product h3 { margin: 10px 0; }
-          .category { font-size: 0.9rem; color: #007185; }
-          .price { font-size: 1.2rem; font-weight: bold; color: #B12704; }
-          
-          .btn {
-            display: inline-block; margin-top: 10px;
-            text-decoration: none; color: black;
-            background: #FFD814; padding: 8px 14px;
-            border-radius: 4px; font-weight: bold;
-          }
-          .btn:hover { background: #F7CA00; }
-        </style>
-      </head>
-      <body>
-        <div class="navbar">
-          <h1>🛒Online Store amozon</h1>
-          <form action="/search" method="get" class="search-bar">
-            <input type="text" name="q" placeholder="Search for products...">
-            <button type="submit">🔍</button>
-          </form>
-          <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/cart">Cart (${cart.length})</a>
-            <a href="/checkout">Checkout</a>
-          </div>
+  <html>
+    <head>
+      <title>Modern Online Store</title>
+      <style>
+        body {
+          font-family: 'Poppins', sans-serif;
+          margin: 0;
+          background: linear-gradient(120deg, #f1f5f9, #e2e8f0);
+          animation: fadeBg 10s infinite alternate;
+        }
+
+        @keyframes fadeBg {
+          0% { background: #f1f5f9; }
+          100% { background: #e2e8f0; }
+        }
+
+        .navbar {
+          background: #0f172a;
+          color: white;
+          padding: 15px 30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .navbar h1 {
+          font-size: 1.8rem;
+          margin: 0;
+          animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+          from { transform: translateY(-20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .search-bar input {
+          padding: 10px;
+          border-radius: 6px 0 0 6px;
+          border: none;
+          width: 250px;
+        }
+
+        .search-bar button {
+          padding: 10px 15px;
+          border: none;
+          background: #fbbf24;
+          border-radius: 0 6px 6px 0;
+          cursor: pointer;
+        }
+
+        .nav-links a {
+          color: white;
+          text-decoration: none;
+          margin-left: 20px;
+          font-weight: bold;
+          transition: 0.3s;
+        }
+        .nav-links a:hover {
+          color: #fbbf24;
+        }
+
+        .container {
+          display: flex;
+        }
+
+        .sidebar {
+          width: 240px;
+          background: #ffffff;
+          padding: 20px;
+          box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar a:hover {
+          color: #ef4444;
+        }
+
+        .store {
+          flex: 1;
+          padding: 20px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 25px;
+        }
+
+        .product {
+          background: #fff;
+          padding: 15px;
+          border-radius: 10px;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          transform: scale(1);
+          transition: 0.3s;
+        }
+
+        .product:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+        }
+
+        .fade-in {
+          animation: fadeIn 1.2s ease-in;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .btn {
+          background: #facc15;
+          padding: 10px 15px;
+          border-radius: 6px;
+          display: inline-block;
+          text-decoration: none;
+          color: #000;
+          font-weight: 600;
+          transition: 0.3s;
+        }
+
+        .btn:hover { background: #eab308; }
+
+      </style>
+    </head>
+
+    <body>
+      <div class="navbar">
+        <h1>🔥 Animated Online Store</h1>
+        <form action="/search" method="get" class="search-bar">
+          <input type="text" name="q" placeholder="Search products...">
+          <button>🔍</button>
+        </form>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/cart">Cart (${cart.length})</a>
+          <a href="/checkout">Checkout</a>
         </div>
-        
-        <div class="container">
-          <aside class="sidebar">
-            <h3>Categories</h3>
-            <ul>
-              <li><a href="/">All Products</a></li>
-              <li><a href="/category/Electronics">Electronics</a></li>
-              <li><a href="/category/Phones">Mobiles</a></li>
-              <li><a href="/category/Accessories">Accessories</a></li>
-              <li><a href="/category/Wearables">Wearables</a></li>
-            </ul>
-          </aside>
-          
-          <section class="store">
-            ${productCards || "<p>No products found 😢</p>"}
-          </section>
-        </div>
-      </body>
-    </html>
-  `;
+      </div>
+
+      <div class="container">
+        <aside class="sidebar">
+          <h3>Categories</h3>
+          <ul>
+            <li><a href="/">All Products</a></li>
+            <li><a href="/category/Electronics">Electronics</a></li>
+            <li><a href="/category/Mobiles">Mobiles</a></li>
+            <li><a href="/category/Accessories">Accessories</a></li>
+            <li><a href="/category/Wearables">Wearables</a></li>
+          </ul>
+        </aside>
+
+        <section class="store">
+          ${items || "<p>No items found</p>"}
+        </section>
+      </div>
+    </body>
+  </html>`;
 }
 
-// Home page
-app.get("/", (req, res) => {
-  res.send(renderStore(products));
-});
+app.get("/", (req, res) => res.send(renderStore(products)));
+app.get("/category/:c", (req, res) => res.send(renderStore(products.filter(p => p.category === req.params.c))));
+app.get("/search", (req, res) => res.send(renderStore(products.filter(p => p.name.toLowerCase().includes(req.query.q?.toLowerCase() || "")))));
 
-// Category pages
-app.get("/category/:cat", (req, res) => {
-  const category = req.params.cat;
-  res.send(renderStore(products.filter((p) => p.category === category)));
-});
-
-// Search functionality
-app.get("/search", (req, res) => {
-  const query = req.query.q ? req.query.q.toLowerCase() : "";
-  const results = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query)
-  );
-  res.send(renderStore(results));
-});
-
-// Add to cart
 app.get("/add-to-cart/:id", (req, res) => {
-  const product = products.find((p) => p.id == req.params.id);
-  if (product) cart.push(product);
+  let item = products.find(p => p.id == req.params.id);
+  if (item) cart.push(item);
   res.redirect("/cart");
 });
 
-// Remove from cart
-app.get("/remove-from-cart/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  cart = cart.filter((p, index) => index !== cart.findIndex((item) => item.id === id));
-  res.redirect("/cart");
-});
-
-// Cart Page
 app.get("/cart", (req, res) => {
-  if (cart.length === 0) {
-    return res.send(`
-      <html><body style="text-align:center; font-family:Arial; background:#f8f9fa; padding:40px;">
-      <h2>🛒 Your cart is empty.</h2>
-      <a href="/" style="background:#FFD814; padding:10px 20px; text-decoration:none; color:black; border-radius:4px;">⬅ Continue Shopping</a>
-      </body></html>
-    `);
-  }
-
-  let cartItems = cart
-    .map(
-      (p, i) => `
-        <li>
-          ${p.name} - ₹${p.price}
-          <a href="/remove-from-cart/${p.id}" style="color:red; margin-left:10px;">❌ Remove</a>
-        </li>
-      `
-    )
-    .join("");
-
-  let total = cart.reduce((sum, p) => sum + p.price, 0);
-
-  res.send(`
-    <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; background:#fff; padding:40px; }
-          ul { list-style:none; padding:0; }
-          li { margin:10px 0; font-size:1.1rem; }
-          .total { font-size:1.3rem; font-weight:bold; color:#B12704; margin:20px 0; }
-          .btn { text-decoration:none; padding:12px 20px; background:#FFD814; color:black; border-radius:4px; font-weight:bold; margin-right:10px; }
-          .btn:hover { background:#F7CA00; }
-        </style>
-      </head>
-      <body>
-        <h2>🛒 Shopping Cart</h2>
-        <ul>${cartItems}</ul>
-        <div class="total">Total: ₹${total}</div>
-        <a href="/checkout" class="btn">Proceed to Checkout</a>
-        <a href="/" class="btn">⬅ Continue Shopping</a>
-      </body>
-    </html>
-  `);
+  let total = cart.reduce((a, b) => a + b.price, 0);
+  let list = cart.map(i => `<li>${i.name} - ₹${i.price}</li>`).join("");
+  res.send(`<h1>Your Cart</h1><ul>${list}</ul><h2>Total: ₹${total}</h2><a href="/checkout">Checkout</a>`);
 });
 
-// Checkout
 app.get("/checkout", (req, res) => {
   cart = [];
-  res.send(`
-    <html><body style="font-family:Arial; text-align:center; padding:50px; background:#e8f5e9;">
-      <h2>✅ Order placed successfully!</h2>
-      <p>📦 Thank you for shopping with us. Your order will be delivered soon.</p>
-      <a href="/" style="background:#FFD814; padding:12px 20px; border-radius:4px; text-decoration:none; color:black; font-weight:bold;">⬅ Back to Home</a>
-    </body></html>
-  `);
+  res.send(`<h1>Order Successful 🎉</h1><a href="/">Back to Store</a>`);
 });
 
-// Products API
-app.get("/products", (req, res) => {
-  res.json(products);
-});
-
-// Start server
-app.listen(port, "0.0.0.0", () => {
-  console.log(`✨ Amazon-style colorful store running on port ${port}`);
-});
+app.listen(port, () => console.log("Server running on port " + port));
 

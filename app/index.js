@@ -125,7 +125,7 @@ function renderStore(productsToShow) {
       </head>
       <body>
         <div class="navbar">
-          <h1>🛒Online Store</h1>
+          <h1>🛒Online Stores</h1>
           <form action="/search" method="get" class="search-bar">
             <input type="text" name="q" placeholder="Search for products...">
             <button type="submit">🔍</button>
